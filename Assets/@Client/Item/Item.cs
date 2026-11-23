@@ -1,16 +1,28 @@
+using System;
 using UnityEngine;
 
 public class Item : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    [SerializeField]
+    private float healAmount = 20f;
+
+    private Action<Item> onItemUsed = null;
+
+    public void Init(Action<Item> onItemUsed)
     {
-        
+        this.onItemUsed = onItemUsed;
     }
 
-    // Update is called once per frame
-    void Update()
+    private void OnTriggerEnter(Collider other)
     {
-        
+        Player player = other.GetComponentInParent<Player>();
+        if (player == null)
+        {
+            return;
+        }
+
+        player.Heal(healAmount);
+        onItemUsed?.Invoke(this);
+        Destroy(gameObject);
     }
 }
